@@ -1,6 +1,8 @@
 import os
+import os.path
 from os.path import basename, splitext
 from shutil import copyfile, rmtree
+import argparse
 
 def generate_skeleton(script=None, base="package"):
     """Generates a package skeleton within current working directory.
@@ -61,3 +63,23 @@ name = {name}
     # create __init__.py
     with open('{base}/{name}/__init__.py'.format(base=base, name=name), 'w') as f:
         f.write("""{script}""".format(script=open(script, 'r').read()))
+
+def main():
+    """
+    `script2package` will correctly treat any `setup.cfg` files which it comes
+    across.
+
+    If it will simply use the default setup settings with the package using
+    the name of the script as the name of the package. The filename will be
+    automatically sanitized.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('script')
+    parser.add_argument('--base', action='store', default='package')
+    args = parser.parse_args()
+
+    if args.script is None or not os.path.isfile(args.script):
+        print("Please enter a valid python script!")
+        raise
+
+    generate_skeleton(args.script, base=args.base)
