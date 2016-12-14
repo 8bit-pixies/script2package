@@ -1,12 +1,14 @@
 import os
 from os.path import basename, splitext
+from shutil import copyfile
 
-def generate_skeleton(script=None, base="package", config={}):
+def generate_skeleton(script=None, base="package", config={}, setup_cfg=None):
     """Generates a package skeleton within current working directory.
 
     :param script: file path to the script of interest
     :param base: name of the base folder for package generation
     :param config: setuptools configuration
+    :param setup_cfg: path to the setup.cfg file
     :return: this function returns nothing
     """
     if script is None:
@@ -33,6 +35,14 @@ config = {config}
 
 setup(**config)""".format(config=config)
         f.write(setup_py)
+
+    # copy setup_cfg if applicable
+    if setup_cfg is not None:
+        if os.path.isfile(setup_cfg):
+            copyfile(setup_cfg, '{base}/setup.cfg')
+        else:
+            print("setup.cfg is not a valid file")
+            raise
 
     # create __init__.py
     with open('{base}/{name}/__init__.py'.format(base=base, name=name), 'w') as f:

@@ -1,18 +1,11 @@
 from script2package import util
 import argparse
-import yaml
+import os.path
 
 def main():
     """
-    The CLI will parse a valid yaml config file.
-
-    ```
-    config={
-        ...
-    }
-    ```
-
-    Which `setup` will then parse as `setup(**config)`
+    `script2package` will correctly treat any `setup.cfg` files which it comes
+    across.
 
     If it will simply use the default setup settings with the package using
     the name of the script as the name of the package. The filename will be
@@ -20,19 +13,18 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('script')
-    parser.add_argument('--config', action="store", type=str,
-                        help="destination of the config diction, should target a python file")
     parser.add_argument('--base', action='store', default='package')
     args = parser.parse_args()
 
-    if args.script is None:
-        print("Please enter a script!")
+    if args.script is None or not os.path.isfile(args.script):
+        print("Please enter a valid python script!")
         raise
 
-    if args.config is not None:
-        f = open(args.config)
-        config = yaml.load(f)
-    else:
+    try:
+        from config import config
+    except:
         config = {}
 
-    util.generate_skeleton(args.script, base=args.base, config=config)
+    setup_cfg = "setup.cfg" if os.path.isfile("setup.cfg") else None
+
+    util.generate_skeleton(args.script, base=args.base, config=config, setup_cfg=setup_cfg)
