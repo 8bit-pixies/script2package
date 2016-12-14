@@ -1,7 +1,6 @@
 import os
 import os.path
 from os.path import basename, splitext
-
 from shutil import copyfile, rmtree
 import argparse
 
@@ -83,4 +82,4 @@ def main():
         print("Please enter a valid python script!")
         raise
 
-    util.generate_skeleton(args.script, base=args.base)
+    generate_skeleton(args.script, base=args.base)
