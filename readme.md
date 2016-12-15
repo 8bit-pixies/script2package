@@ -21,3 +21,8 @@ Examples
 A bootstrap example has been provided by running `script2package script2package.py`, which will produce a self contained version within the folder `package`.
 
 A simple standalone example with no `setup.cfg` file is provided in `Example/add/add.py` with the generated package in `Example/add/package`.
+
+Similar Projects
+================
+
+[`flit`](https://github.com/takluyver/flit) is a similar Python project which aims to convert a Python script into a Python wheel file.
