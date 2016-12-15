@@ -1,6 +1,10 @@
-import os
-from os.path import basename, splitext
-from shutil import copyfile, rmtree
+#!/usr/bin/env python
+
+"""script2package: turn a python script into a python package"""
+
+import argparse
+import os.path
+from script2package import *
 
 def generate_skeleton(script=None, base="package"):
     """Generates a package skeleton within current working directory.
@@ -11,6 +15,9 @@ def generate_skeleton(script=None, base="package"):
     :param setup_cfg: path to the setup.cfg file
     :return: this function returns nothing
     """
+    import os
+    from os.path import basename, splitext
+    from shutil import copyfile, rmtree
     if script is None:
         print("Script file must be provided within `generate_skeleton`!")
         raise
@@ -43,8 +50,8 @@ setup(
 
     # copy setup.cfg and readme.md if applicable
     # will have to extend to other files in future
-    if os.path.isfile(os.path.join(os.path.dirname(base), 'setup.cfg')):
-        copyfile(os.path.join(os.path.dirname(base), 'setup.cfg'),
+    if os.path.isfile(os.path.join(os.path.dirname(script), 'setup.cfg')):
+        copyfile(os.path.join(os.path.dirname(script), 'setup.cfg'),
                  '{base}/setup.cfg'.format(base=base))
     else:
         # we have to generate the file
@@ -54,10 +61,35 @@ setup(
 name = {name}
 """.format(name=name)
             f.write(setup_cfg)
-    if os.path.isfile(os.path.join(os.path.dirname(base), 'readme.md')):
-        copyfile(os.path.join(os.path.dirname(base), 'readme.md'),
+    if os.path.isfile(os.path.join(os.path.dirname(script), 'readme.md')):
+        copyfile(os.path.join(os.path.dirname(script), 'readme.md'),
                  '{base}/readme.md'.format(base=base))
 
     # create __init__.py
     with open('{base}/{name}/__init__.py'.format(base=base, name=name), 'w') as f:
         f.write("""{script}""".format(script=open(script, 'r').read()))
+
+    # create __init__.py: this is redundant but needed for cli tools??
+    # have to have an option to turn this on or off
+    with open('{base}/{name}/__main__.py'.format(base=base, name=name), 'w') as f:
+        f.write("""{script}""".format(script=open(script, 'r').read()))
+
+def main():
+    """
+    `script2package` will correctly treat any `setup.cfg` files which it comes
+    across.
+
+    If it will simply use the default setup settings with the package using
+    the name of the script as the name of the package. The filename will be
+    automatically sanitized.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('script')
+    parser.add_argument('--base', action='store', default='package')
+    args = parser.parse_args()
+
+    if args.script is None or not os.path.isfile(args.script):
+        print("Please enter a valid python script!")
+        raise
+
+    generate_skeleton(args.script, base=args.base)

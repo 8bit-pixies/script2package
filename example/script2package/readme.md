@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/script2package.svg)](https://badge.fury.io/py/script2package)
+
 script2package
 ==============
 
@@ -7,6 +9,11 @@ Usage: `script2package script.py --base base_folder`
 
 To extend the flexibility of this package, you can enable setup options through
 providing `setup.cfg` if you so desire.
+
+Installation
+============
+
+You can install this package via `pip` (`pip install script2package`) or `python setup.py install`.
 
 Examples
 ========
